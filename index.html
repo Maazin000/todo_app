@@ -1,51 +1,76 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <title>Todo App</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+    }
+
+    input {
+      padding: 8px;
+    }
+
+    button {
+      padding: 6px;
+      margin-left: 5px;
+    }
+
+    li {
+      margin: 10px;
+    }
+  </style>
+</head>
+
 <body>
 
-<h2>Todo List</h2>
+  <h1>Todo List</h1>
 
-<input id="taskInput" placeholder="Enter task">
-<button onclick="addTask()">Add</button>
+  <input id="taskInput" placeholder="Enter task">
+  <button onclick="addTask()">Add</button>
 
-<ul id="list"></ul>
+  <ul id="list"></ul>
 
-<script>
-async function addTask() {
-  const title = document.getElementById("taskInput").value;
+  <script>
+    async function addTask() {
+      const title = document.getElementById("taskInput").value;
 
-  await fetch("/add", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title })
-  });
+      await fetch("/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title })
+      });
 
-  loadTasks();
-}
+      document.getElementById("taskInput").value = "";
+      loadTasks();
+    }
 
-async function deleteTask(id) {
-  await fetch("/delete/" + id, { method: "DELETE" });
-  loadTasks();
-}
+    async function deleteTask(id) {
+      await fetch("/delete/" + id, { method: "DELETE" });
+      loadTasks();
+    }
 
-async function loadTasks() {
-  const res = await fetch("/tasks");
-  const data = await res.json();
+    async function loadTasks() {
+      const res = await fetch("/tasks");
+      const data = await res.json();
 
-  const list = document.getElementById("list");
-  list.innerHTML = "";
+      const list = document.getElementById("list");
+      list.innerHTML = "";
 
-  data.forEach(task => {
-    const li = document.createElement("li");
-   li.innerHTML = `
-  ${task.title} <small>(${new Date(task.createdAt).toLocaleString()})</small>
-  <button onclick="deleteTask('${task._id}')">❌</button>
-`;
-    list.appendChild(li);
-  });
-}
+      data.forEach(task => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          ${task.title}
+          <button onclick="deleteTask('${task._id}')">❌</button>
+        `;
+        list.appendChild(li);
+      });
+    }
 
-loadTasks();
-</script>
+    loadTasks();
+  </script>
 
 </body>
 </html>
