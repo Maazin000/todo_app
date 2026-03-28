@@ -26,51 +26,73 @@
 
 <body>
 
-  <h1>Todo List</h1>
+<h1>MongoDB Todo App</h1>
 
-  <input id="taskInput" placeholder="Enter task">
-  <button onclick="addTask()">Add</button>
+<input id="taskInput" placeholder="Enter task">
+<button onclick="addTask()">Add</button>
 
-  <ul id="list"></ul>
+<h3 id="count"></h3>
 
-  <script>
-    async function addTask() {
-      const title = document.getElementById("taskInput").value;
+<ul id="list"></ul>
 
-      await fetch("/add", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title })
-      });
+<script>
+async function addTask() {
+  const title = document.getElementById("taskInput").value;
 
-      document.getElementById("taskInput").value = "";
-      loadTasks();
-    }
+  if (!title.trim()) return alert("Enter a task");
 
-    async function deleteTask(id) {
-      await fetch("/delete/" + id, { method: "DELETE" });
-      loadTasks();
-    }
+  await fetch("/add", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title })
+  });
 
-    async function loadTasks() {
-      const res = await fetch("/tasks");
-      const data = await res.json();
+  document.getElementById("taskInput").value = "";
+  loadTasks();
+}
 
-      const list = document.getElementById("list");
-      list.innerHTML = "";
+async function deleteTask(id) {
+  await fetch("/delete/" + id, { method: "DELETE" });
+  loadTasks();
+}
 
-      data.forEach(task => {
-        const li = document.createElement("li");
-        li.innerHTML = `
-          ${task.title}
-          <button onclick="deleteTask('${task._id}')">❌</button>
-        `;
-        list.appendChild(li);
-      });
-    }
+async function toggleTask(id) {
+  await fetch("/toggle/" + id, { method: "PUT" });
+  loadTasks();
+}
 
-    loadTasks();
-  </script>
+async function loadTasks() {
+  const res = await fetch("/tasks");
+  const data = await res.json();
+
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+
+  let completed = 0;
+
+  data.forEach(task => {
+    if (task.completed) completed++;
+
+    const li = document.createElement("li");
+
+    li.innerHTML = `
+      <span style="text-decoration:${task.completed ? 'line-through' : 'none'}">
+        ${task.title}
+      </span>
+      <small>(${new Date(task.createdAt).toLocaleString()})</small>
+      <button onclick="toggleTask('${task._id}')">✔</button>
+      <button onclick="deleteTask('${task._id}')">❌</button>
+    `;
+
+    list.appendChild(li);
+  });
+
+  document.getElementById("count").innerText =
+    `${completed}/${data.length} completed`;
+}
+
+loadTasks();
+</script>
 
 </body>
 </html>
