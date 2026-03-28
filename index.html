@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Todo List</h2>
+
+<input id="taskInput" placeholder="Enter task">
+<button onclick="addTask()">Add</button>
+
+<ul id="list"></ul>
+
+<script>
+async function addTask() {
+  const title = document.getElementById("taskInput").value;
+
+  await fetch("/add", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title })
+  });
+
+  loadTasks();
+}
+
+async function loadTasks() {
+  const res = await fetch("/tasks");
+  const data = await res.json();
+
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+
+  data.forEach(task => {
+    const li = document.createElement("li");
+    li.textContent = task.title;
+    list.appendChild(li);
+  });
+}
+
+loadTasks();
+</script>
+
+</body>
+</html>
