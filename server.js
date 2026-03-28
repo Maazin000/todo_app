@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 
 const app = express();
 app.use(express.json());
-app.use(express.static(__dirname));
+app.use(express.static("public"));
 
 mongoose.connect("mongodb://127.0.0.1:27017/todoApp")
 .then(() => console.log("MongoDB Connected"))
