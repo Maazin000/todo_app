@@ -22,6 +22,11 @@ async function addTask() {
   loadTasks();
 }
 
+async function deleteTask(id) {
+  await fetch("/delete/" + id, { method: "DELETE" });
+  loadTasks();
+}
+
 async function loadTasks() {
   const res = await fetch("/tasks");
   const data = await res.json();
@@ -31,7 +36,10 @@ async function loadTasks() {
 
   data.forEach(task => {
     const li = document.createElement("li");
-    li.textContent = task.title;
+   li.innerHTML = `
+  ${task.title} <small>(${new Date(task.createdAt).toLocaleString()})</small>
+  <button onclick="deleteTask('${task._id}')">❌</button>
+`;
     list.appendChild(li);
   });
 }
