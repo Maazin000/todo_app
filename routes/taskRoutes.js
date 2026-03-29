@@ -17,7 +17,7 @@ router.post("/add", async (req, res) => {
   try {
     const newTask = new Task({ 
       title: req.body.title,
-      priority: req.body.priority || 'medium'
+      priority: req.body.priority || 'medium'  
     });
     await newTask.save();
     res.json({ success: true, task: newTask });
@@ -25,6 +25,7 @@ router.post("/add", async (req, res) => {
     res.status(500).json({ error: "Error adding task" });
   }
 });
+
 
 // DELETE task
 router.delete("/delete/:id", async (req, res) => {
@@ -53,16 +54,15 @@ router.put("/toggle/:id", async (req, res) => {
 
 // EDIT task
 router.put("/edit/:id", async (req, res) => {
-  try {
-    const task = await Task.findByIdAndUpdate(
-      req.params.id,
-      { title: req.body.title },
-      { new: true }
-    );
-    res.json({ success: true, task });
-  } catch (err) {
-    res.status(500).json({ error: "Error editing task" });
-  }
+  const task = await Task.findByIdAndUpdate(
+    req.params.id,
+    { 
+      title: req.body.title,
+      priority: req.body.priority  
+    },
+    { new: true }
+  );
+  res.json({ success: true, task });
 });
 
 // DASHBOARD STATISTICS
