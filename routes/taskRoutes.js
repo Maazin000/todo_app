@@ -9,28 +9,26 @@ router.get("/tasks", async (req, res) => {
     const tasks = await Task.find().sort({ createdAt: -1 });
     res.json(tasks);
   } catch (err) {
-    console.log(err);
     res.status(500).json({ error: "Error fetching tasks" });
   }
 });
 
-// ADD task with priority
+// ADD task with ALL fields
 router.post("/add", async (req, res) => {
   try {
-    console.log("Received data:", req.body);
-    
     const newTask = new Task({ 
       title: req.body.title,
-      priority: req.body.priority || 'medium'
+      priority: req.body.priority || 'medium',
+      dueDate: req.body.dueDate || null,
+      reminderDate: req.body.reminderDate || null,
+      category: req.body.category || 'other',
+      tags: req.body.tags || []
     });
-    
-    const savedTask = await newTask.save();
-    console.log("Saved task:", savedTask);
-    
-    res.json({ success: true, task: savedTask });
+    await newTask.save();
+    res.json({ success: true, task: newTask });
   } catch (err) {
-    console.log("Error details:", err);
-    res.status(500).json({ error: err.message });
+    console.log(err);
+    res.status(500).json({ error: "Error adding task" });
   }
 });
 
@@ -49,7 +47,6 @@ router.put("/toggle/:id", async (req, res) => {
   try {
     const task = await Task.findById(req.params.id);
     if (!task) return res.status(404).json({ error: "Task not found" });
-    
     task.completed = !task.completed;
     task.completedAt = task.completed ? new Date() : null;
     await task.save();
@@ -66,7 +63,11 @@ router.put("/edit/:id", async (req, res) => {
       req.params.id,
       { 
         title: req.body.title,
-        priority: req.body.priority
+        priority: req.body.priority,
+        dueDate: req.body.dueDate,
+        reminderDate: req.body.reminderDate,
+        category: req.body.category,
+        tags: req.body.tags
       },
       { new: true }
     );
@@ -76,16 +77,14 @@ router.put("/edit/:id", async (req, res) => {
   }
 });
 
-// DASHBOARD STATISTICS
+// Contributor 1 routes
 router.get("/dashboard/stats", async (req, res) => {
   try {
     const totalTasks = await Task.countDocuments();
     const completedTasks = await Task.countDocuments({ completed: true });
-    
     const priorityStats = await Task.aggregate([
       { $group: { _id: "$priority", count: { $sum: 1 } } }
     ]);
-    
     res.json({
       totalTasks,
       completedTasks,
@@ -94,55 +93,93 @@ router.get("/dashboard/stats", async (req, res) => {
       priorityStats
     });
   } catch (err) {
-    console.log(err);
     res.status(500).json({ error: "Error fetching stats" });
   }
 });
 
-// PROVE MongoDB is being used - Direct database query
+// Contributor 2 routes
+router.get("/tasks/search", async (req, res) => {
+  try {
+    const { q, status, due } = req.query;
+    let query = {};
+    if (q && q.trim()) query.title = { $regex: q, $options: 'i' };
+    if (status === 'completed') query.completed = true;
+    if (status === 'pending') query.completed = false;
+    if (due === 'today') {
+      const today = new Date(); today.setHours(0,0,0,0);
+      const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
+      query.dueDate = { $gte: today, $lt: tomorrow };
+    }
+    if (due === 'overdue') {
+      const today = new Date(); today.setHours(0,0,0,0);
+      query.dueDate = { $lt: today, $ne: null };
+      query.completed = false;
+    }
+    const tasks = await Task.find(query).sort({ dueDate: 1 });
+    res.json(tasks);
+  } catch (err) {
+    res.status(500).json({ error: "Error searching tasks" });
+  }
+});
+
+router.get("/tasks/overdue", async (req, res) => {
+  try {
+    const today = new Date(); today.setHours(0,0,0,0);
+    const tasks = await Task.find({ dueDate: { $lt: today, $ne: null }, completed: false });
+    res.json(tasks);
+  } catch (err) {
+    res.status(500).json({ error: "Error fetching overdue tasks" });
+  }
+});
+
+// Contributor 3 routes
+router.get("/categories/stats", async (req, res) => {
+  try {
+    const stats = await Task.aggregate([
+      { $group: { _id: "$category", count: { $sum: 1 }, completed: { $sum: { $cond: ["$completed", 1, 0] } } } }
+    ]);
+    res.json(stats);
+  } catch (err) {
+    res.status(500).json({ error: "Error fetching stats" });
+  }
+});
+
+router.get("/export", async (req, res) => {
+  try {
+    const tasks = await Task.find();
+    res.json(tasks);
+  } catch (err) {
+    res.status(500).json({ error: "Error exporting tasks" });
+  }
+});
+
+router.post("/import", async (req, res) => {
+  try {
+    const tasks = req.body;
+    await Task.insertMany(tasks);
+    res.json({ success: true, count: tasks.length });
+  } catch (err) {
+    res.status(500).json({ error: "Error importing tasks" });
+  }
+});
+
+// MongoDB Proof
 router.get("/mongodb-proof", async (req, res) => {
   try {
-    // Direct MongoDB query (not using Mongoose)
     const db = mongoose.connection.db;
     const collection = db.collection("tasks");
-    
     const allTasks = await collection.find({}).toArray();
     const count = await collection.countDocuments();
-    const priorityCount = await collection.aggregate([
-      { $group: { _id: "$priority", count: { $sum: 1 } } }
-    ]).toArray();
-    const completedCount = await collection.countDocuments({ completed: true });
-    const pendingCount = await collection.countDocuments({ completed: false });
-    
     res.json({
       success: true,
-      message: "✅ MongoDB is connected and working!",
-      databaseInfo: {
-        databaseName: "todoApp",
-        collectionName: "tasks",
-        connectionStatus: "Connected",
-        mongodbHost: "mongodb://127.0.0.1:27017"
-      },
-      statistics: {
-        totalTasks: count,
-        completedTasks: completedCount,
-        pendingTasks: pendingCount,
-        priorityDistribution: priorityCount
-      },
-      sampleTasks: allTasks.slice(0, 5),
-      mongodbQueriesUsed: [
-        "db.tasks.find()",
-        "db.tasks.countDocuments()", 
-        "db.tasks.aggregate()"
-      ]
+      message: "✅ MongoDB connected to todoApp database",
+      database: "todoApp",
+      collection: "tasks",
+      totalTasks: count,
+      tasks: allTasks
     });
   } catch (err) {
-    console.log("MongoDB proof error:", err);
-    res.json({ 
-      success: false, 
-      error: err.message,
-      message: "Make sure MongoDB is running with: mongod"
-    });
+    res.json({ success: false, error: err.message });
   }
 });
 
