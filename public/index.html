@@ -3,13 +3,19 @@
 <head>
   <title>Todo App - Priority Dashboard</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
       padding: 20px;
     }
+
     .container {
       max-width: 1000px;
       margin: 0 auto;
@@ -18,8 +24,13 @@
       padding: 30px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     }
-    h1 { text-align: center; color: #333; margin-bottom: 30px; }
-    
+
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+    }
+
     /* Dashboard */
     .dashboard {
       display: grid;
@@ -27,6 +38,7 @@
       gap: 20px;
       margin-bottom: 30px;
     }
+
     .stat-card {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
@@ -34,9 +46,18 @@
       border-radius: 10px;
       text-align: center;
     }
-    .stat-card .number { font-size: 32px; font-weight: bold; }
-    .stat-card .label { font-size: 12px; margin-top: 5px; opacity: 0.9; }
-    
+
+    .stat-card .number {
+      font-size: 32px;
+      font-weight: bold;
+    }
+
+    .stat-card .label {
+      font-size: 12px;
+      margin-top: 5px;
+      opacity: 0.9;
+    }
+
     /* Priority Chart */
     .priority-chart {
       background: #f7f7f7;
@@ -44,12 +65,18 @@
       border-radius: 10px;
       margin-bottom: 20px;
     }
+
     .priority-bar {
       margin: 10px 0;
       display: flex;
       align-items: center;
     }
-    .priority-label { width: 80px; font-weight: bold; }
+
+    .priority-label {
+      width: 80px;
+      font-weight: bold;
+    }
+
     .bar-container {
       flex: 1;
       background: #e0e0e0;
@@ -57,6 +84,7 @@
       overflow: hidden;
       margin: 0 10px;
     }
+
     .bar {
       height: 30px;
       transition: width 0.3s;
@@ -67,42 +95,69 @@
       color: white;
       font-size: 12px;
     }
-    
+
     .input-section {
       display: flex;
       gap: 10px;
       margin-bottom: 20px;
       flex-wrap: wrap;
     }
+
     input, select, button {
       padding: 12px;
       border: 2px solid #e0e0e0;
       border-radius: 8px;
       font-size: 16px;
     }
-    input { flex: 2; }
-    select { flex: 1; }
+
+    input {
+      flex: 2;
+      min-width: 200px;
+    }
+
+    select {
+      flex: 1;
+      min-width: 120px;
+    }
+
     button {
       background: #667eea;
       color: white;
       border: none;
       cursor: pointer;
+      transition: background 0.3s;
     }
-    button:hover { background: #5a67d8; }
-    
+
+    button:hover {
+      background: #5a67d8;
+    }
+
     .filters {
       display: flex;
       gap: 10px;
       margin-bottom: 20px;
       flex-wrap: wrap;
     }
+
     .filter-btn {
       background: #e0e0e0;
       color: #333;
       padding: 8px 16px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s;
     }
-    .filter-btn.active { background: #667eea; color: white; }
-    
+
+    .filter-btn.active {
+      background: #667eea;
+      color: white;
+    }
+
+    .filter-btn:hover {
+      transform: translateY(-2px);
+    }
+
     .stats {
       text-align: center;
       padding: 15px;
@@ -112,7 +167,11 @@
       font-weight: bold;
       color: #667eea;
     }
-    .task-list { list-style: none; }
+
+    .task-list {
+      list-style: none;
+    }
+
     .task-item {
       display: flex;
       align-items: center;
@@ -120,15 +179,35 @@
       background: #f9f9f9;
       margin-bottom: 10px;
       border-radius: 8px;
+      transition: transform 0.2s;
       border-left: 5px solid;
     }
+
     .task-item.priority-urgent { border-left-color: #f56565; }
     .task-item.priority-high { border-left-color: #ed8936; }
     .task-item.priority-medium { border-left-color: #ecc94b; }
     .task-item.priority-low { border-left-color: #48bb78; }
-    .task-content { flex: 1; }
-    .task-title { font-size: 16px; margin-bottom: 5px; }
-    .task-title.completed { text-decoration: line-through; color: #888; }
+
+    .task-item:hover {
+      transform: translateX(5px);
+      background: #f0f0f0;
+    }
+
+    .task-content {
+      flex: 1;
+    }
+
+    .task-title {
+      font-size: 16px;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+
+    .task-title.completed {
+      text-decoration: line-through;
+      color: #888;
+    }
+
     .priority-badge {
       display: inline-block;
       padding: 2px 8px;
@@ -136,16 +215,52 @@
       font-size: 11px;
       margin-left: 10px;
     }
+
     .priority-urgent { background: #f56565; color: white; }
     .priority-high { background: #ed8936; color: white; }
-    .priority-medium { background: #ecc94b; }
+    .priority-medium { background: #ecc94b; color: #333; }
     .priority-low { background: #48bb78; color: white; }
-    .task-date { font-size: 12px; color: #999; }
-    .task-actions { display: flex; gap: 8px; }
-    .task-actions button { padding: 6px 12px; font-size: 14px; }
+
+    .task-date {
+      font-size: 12px;
+      color: #999;
+    }
+
+    .task-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .task-actions button {
+      padding: 6px 12px;
+      font-size: 14px;
+    }
+
     .edit-btn { background: #48bb78; }
     .toggle-btn { background: #4299e1; }
     .delete-btn { background: #f56565; }
+
+    .empty-message {
+      text-align: center;
+      padding: 40px;
+      color: #999;
+      font-size: 18px;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .task-item {
+      animation: fadeIn 0.3s ease-out;
+    }
   </style>
 </head>
 <body>
@@ -173,13 +288,13 @@
   </div>
   
   <div class="filters">
-    <button class="filter-btn active" onclick="filterTasks('all')">All</button>
-    <button class="filter-btn" onclick="filterTasks('urgent')">Urgent</button>
-    <button class="filter-btn" onclick="filterTasks('high')">High</button>
-    <button class="filter-btn" onclick="filterTasks('medium')">Medium</button>
-    <button class="filter-btn" onclick="filterTasks('low')">Low</button>
-    <button class="filter-btn" onclick="filterTasks('completed')">Completed</button>
-    <button class="filter-btn" onclick="filterTasks('pending')">Pending</button>
+    <button class="filter-btn active" onclick="filterTasks('all', this)">All</button>
+    <button class="filter-btn" onclick="filterTasks('urgent', this)">🔥 Urgent</button>
+    <button class="filter-btn" onclick="filterTasks('high', this)">🟠 High</button>
+    <button class="filter-btn" onclick="filterTasks('medium', this)">🟡 Medium</button>
+    <button class="filter-btn" onclick="filterTasks('low', this)">🟢 Low</button>
+    <button class="filter-btn" onclick="filterTasks('completed', this)">✅ Completed</button>
+    <button class="filter-btn" onclick="filterTasks('pending', this)">⏰ Pending</button>
   </div>
   
   <div class="stats" id="stats"></div>
@@ -191,103 +306,221 @@ let allTasks = [];
 let currentFilter = 'all';
 
 async function loadDashboard() {
-  const res = await fetch("/dashboard/stats");
-  const stats = await res.json();
-  document.getElementById("totalTasks").textContent = stats.totalTasks;
-  document.getElementById("completedTasks").textContent = stats.completedTasks;
-  document.getElementById("pendingTasks").textContent = stats.pendingTasks;
-  document.getElementById("completionRate").textContent = `${stats.completionRate}%`;
-  
-  const priorityBars = document.getElementById("priorityBars");
-  const colors = { urgent: '#f56565', high: '#ed8936', medium: '#ecc94b', low: '#48bb78' };
-  priorityBars.innerHTML = '';
-  for (const p of ['urgent', 'high', 'medium', 'low']) {
-    const stat = stats.priorityStats.find(s => s._id === p);
-    const count = stat ? stat.count : 0;
-    const percent = stats.totalTasks > 0 ? (count / stats.totalTasks * 100).toFixed(1) : 0;
-    priorityBars.innerHTML += `
-      <div class="priority-bar">
-        <div class="priority-label">${p.toUpperCase()}</div>
-        <div class="bar-container"><div class="bar" style="width: ${percent}%; background: ${colors[p]}">${count}</div></div>
-      </div>`;
+  try {
+    const res = await fetch("/dashboard/stats");
+    const stats = await res.json();
+    document.getElementById("totalTasks").textContent = stats.totalTasks;
+    document.getElementById("completedTasks").textContent = stats.completedTasks;
+    document.getElementById("pendingTasks").textContent = stats.pendingTasks;
+    document.getElementById("completionRate").textContent = `${stats.completionRate}%`;
+    
+    const priorityBars = document.getElementById("priorityBars");
+    const colors = { urgent: '#f56565', high: '#ed8936', medium: '#ecc94b', low: '#48bb78' };
+    priorityBars.innerHTML = '';
+    for (const p of ['urgent', 'high', 'medium', 'low']) {
+      const stat = stats.priorityStats.find(s => s._id === p);
+      const count = stat ? stat.count : 0;
+      const percent = stats.totalTasks > 0 ? (count / stats.totalTasks * 100).toFixed(1) : 0;
+      priorityBars.innerHTML += `
+        <div class="priority-bar">
+          <div class="priority-label">${p.toUpperCase()}</div>
+          <div class="bar-container"><div class="bar" style="width: ${percent}%; background: ${colors[p]}">${count}</div></div>
+        </div>`;
+    }
+  } catch (err) {
+    console.error("Dashboard error:", err);
   }
 }
 
 async function addTask() {
   const title = document.getElementById("taskInput").value;
   const priority = document.getElementById("prioritySelect").value;
-  if (!title.trim()) return alert("Enter a task!");
-  await fetch("/add", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title, priority }) });
-  document.getElementById("taskInput").value = "";
-  loadTasks(); loadDashboard();
-}
+  
+  if (!title.trim()) {
+    alert("Please enter a task!");
+    return;
+  }
 
-async function deleteTask(id) {
-  if (confirm("Delete?")) { await fetch(`/delete/${id}`, { method: "DELETE" }); loadTasks(); loadDashboard(); }
-}
+  try {
+    const response = await fetch("/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title, priority })
+    });
 
-async function toggleTask(id) {
-  await fetch(`/toggle/${id}`, { method: "PUT" });
-  loadTasks(); loadDashboard();
-}
-
-async function editTask(id, title) {
-  const newTitle = prompt("Edit task:", title);
-  if (newTitle && newTitle.trim()) {
-    await fetch(`/edit/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title: newTitle }) });
-    loadTasks(); loadDashboard();
+    if (response.ok) {
+      document.getElementById("taskInput").value = "";
+      loadTasks();
+      loadDashboard();
+    } else {
+      alert("Error adding task");
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    alert("Error adding task");
   }
 }
 
-function handleKeyPress(e) { if (e.key === "Enter") addTask(); }
+async function deleteTask(id) {
+  if (confirm("Are you sure you want to delete this task?")) {
+    try {
+      await fetch(`/delete/${id}`, { method: "DELETE" });
+      loadTasks();
+      loadDashboard();
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error deleting task");
+    }
+  }
+}
 
-function filterTasks(filter) {
+async function toggleTask(id) {
+  try {
+    await fetch(`/toggle/${id}`, { method: "PUT" });
+    loadTasks();
+    loadDashboard();
+  } catch (error) {
+    console.error("Error:", error);
+    alert("Error toggling task");
+  }
+}
+
+async function editTask(id, currentTitle, currentPriority) {
+  const newTitle = prompt("Edit task:", currentTitle);
+  const newPriority = prompt("Edit priority (low/medium/high/urgent):", currentPriority);
+  
+  if (newTitle && newTitle.trim()) {
+    try {
+      await fetch(`/edit/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: newTitle, priority: newPriority || 'medium' })
+      });
+      loadTasks();
+      loadDashboard();
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error editing task");
+    }
+  }
+}
+
+function handleKeyPress(event) {
+  if (event.key === "Enter") {
+    addTask();
+  }
+}
+
+function filterTasks(filter, clickedElement = null) {
   currentFilter = filter;
-  document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-  event.target.classList.add('active');
-  let filtered = [...allTasks];
-  if (filter === 'urgent') filtered = allTasks.filter(t => t.priority === 'urgent');
-  else if (filter === 'high') filtered = allTasks.filter(t => t.priority === 'high');
-  else if (filter === 'medium') filtered = allTasks.filter(t => t.priority === 'medium');
-  else if (filter === 'low') filtered = allTasks.filter(t => t.priority === 'low');
-  else if (filter === 'completed') filtered = allTasks.filter(t => t.completed);
-  else if (filter === 'pending') filtered = allTasks.filter(t => !t.completed);
-  displayTasks(filtered);
+  
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  
+  if (clickedElement) {
+    clickedElement.classList.add('active');
+  } else {
+    const allButton = document.querySelector('.filter-btn[onclick*="all"]');
+    if (allButton) allButton.classList.add('active');
+  }
+  
+  let filteredTasks = [...allTasks];
+  
+  switch(filter) {
+    case 'urgent':
+      filteredTasks = allTasks.filter(t => t.priority === 'urgent');
+      break;
+    case 'high':
+      filteredTasks = allTasks.filter(t => t.priority === 'high');
+      break;
+    case 'medium':
+      filteredTasks = allTasks.filter(t => t.priority === 'medium');
+      break;
+    case 'low':
+      filteredTasks = allTasks.filter(t => t.priority === 'low');
+      break;
+    case 'completed':
+      filteredTasks = allTasks.filter(t => t.completed === true);
+      break;
+    case 'pending':
+      filteredTasks = allTasks.filter(t => t.completed === false);
+      break;
+    default:
+      filteredTasks = allTasks;
+  }
+  
+  displayTasks(filteredTasks);
 }
 
 function displayTasks(tasks) {
   const taskList = document.getElementById("taskList");
-  if (tasks.length === 0) { taskList.innerHTML = '<div class="empty-message">✨ No tasks</div>'; return; }
-  let completed = 0;
-  const priorityNames = { urgent: 'URGENT', high: 'HIGH', medium: 'MEDIUM', low: 'LOW' };
+  const statsDiv = document.getElementById("stats");
+  
+  if (tasks.length === 0) {
+    taskList.innerHTML = '<div class="empty-message">✨ No tasks found. Add your first task above! ✨</div>';
+    statsDiv.innerHTML = "📊 0/0 tasks completed";
+    return;
+  }
+  
+  let completedCount = 0;
+  
+  const priorityNames = {
+    urgent: 'URGENT',
+    high: 'HIGH',
+    medium: 'MEDIUM',
+    low: 'LOW'
+  };
+  
   taskList.innerHTML = tasks.map(task => {
-    if (task.completed) completed++;
-    return `<li class="task-item priority-${task.priority}">
-      <div class="task-content">
-        <div class="task-title ${task.completed ? 'completed' : ''}">
-          ${escapeHtml(task.title)} <span class="priority-badge priority-${task.priority}">${priorityNames[task.priority]}</span>
+    if (task.completed) completedCount++;
+    
+    return `
+      <li class="task-item priority-${task.priority}">
+        <div class="task-content">
+          <div class="task-title ${task.completed ? 'completed' : ''}">
+            ${escapeHtml(task.title)}
+            <span class="priority-badge priority-${task.priority}">${priorityNames[task.priority]}</span>
+          </div>
+          <div class="task-date">
+            📅 Created: ${new Date(task.createdAt).toLocaleString()}
+            ${task.completedAt ? ` | ✅ Completed: ${new Date(task.completedAt).toLocaleString()}` : ''}
+          </div>
         </div>
-        <div class="task-date">📅 ${new Date(task.createdAt).toLocaleString()}</div>
-      </div>
-      <div class="task-actions">
-        <button class="edit-btn" onclick="editTask('${task._id}', '${escapeHtml(task.title)}')">Edit</button>
-        <button class="toggle-btn" onclick="toggleTask('${task._id}')">${task.completed ? 'Undo' : 'Complete'}</button>
-        <button class="delete-btn" onclick="deleteTask('${task._id}')">Delete</button>
-      </div>
-    </li>`;
+        <div class="task-actions">
+          <button class="edit-btn" onclick="editTask('${task._id}', '${escapeHtml(task.title)}', '${task.priority}')">✏️ Edit</button>
+          <button class="toggle-btn" onclick="toggleTask('${task._id}')">
+            ${task.completed ? '↺ Undo' : '✓ Complete'}
+          </button>
+          <button class="delete-btn" onclick="deleteTask('${task._id}')">🗑️ Delete</button>
+        </div>
+      </li>
+    `;
   }).join('');
-  document.getElementById("stats").innerHTML = `📊 ${completed}/${tasks.length} completed (${Math.round(completed/tasks.length*100)}%)`;
+  
+  const percentage = tasks.length > 0 ? Math.round((completedCount / tasks.length) * 100) : 0;
+  statsDiv.innerHTML = `📊 Showing ${tasks.length} tasks • ${completedCount} completed (${percentage}%)`;
 }
 
 async function loadTasks() {
-  const res = await fetch("/tasks");
-  allTasks = await res.json();
-  filterTasks(currentFilter);
+  try {
+    const response = await fetch("/tasks");
+    allTasks = await response.json();
+    filterTasks(currentFilter, null);
+  } catch (error) {
+    console.error("Error loading tasks:", error);
+    document.getElementById("taskList").innerHTML = '<div class="empty-message">❌ Error loading tasks. Make sure the server is running!</div>';
+  }
 }
 
-function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
 
-loadTasks(); loadDashboard();
+loadTasks();
+loadDashboard();
 </script>
 </body>
 </html>

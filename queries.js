@@ -1,16 +1,21 @@
-// queries.js - MongoDB Shell Script
-// This is NOT Node.js code - it's MongoDB Shell JavaScript
-
-// Connect to your database
-// This tells the shell which database to use
+// queries.js - Updated with Priority
 db = db.getSiblingDB('todoApp');
 
-// print() - Output text to the console
-print("\n=== All Tasks ===");
+print("\n========== TODO APP - MONGODB DATABASE ==========\n");
 
-// forEach() - Loop through each document
-// printjson() - Pretty print JSON objects
+print("=== All Tasks (with Priority) ===");
 db.tasks.find().forEach(printjson);
+
+print("\n=== Tasks Grouped by Priority ===");
+db.tasks.aggregate([
+  {
+    $group: {
+      _id: "$priority",
+      count: { $sum: 1 },
+      tasks: { $push: "$title" }
+    }
+  }
+]).forEach(printjson);
 
 print("\n=== Pending Tasks ===");
 db.tasks.find({ completed: false }).forEach(printjson);
@@ -23,21 +28,18 @@ print("Total tasks: " + db.tasks.count());
 print("Completed: " + db.tasks.count({ completed: true }));
 print("Pending: " + db.tasks.count({ completed: false }));
 
+print("\n=== Priority Distribution ===");
+print("Urgent: " + db.tasks.count({ priority: "urgent" }));
+print("High: " + db.tasks.count({ priority: "high" }));
+print("Medium: " + db.tasks.count({ priority: "medium" }));
+print("Low: " + db.tasks.count({ priority: "low" }));
+
 print("\n=== Latest 5 Tasks ===");
 db.tasks.find().sort({ createdAt: -1 }).limit(5).forEach(printjson);
 
-print("\n=== Statistics by Status ===");
-// Using aggregation pipeline
-db.tasks.aggregate([
-  {
-    $group: {
-      _id: "$completed",
-      count: { $sum: 1 }
-    }
-  }
-]).forEach(printjson);
+print("\n=== MongoDB Connection Info ===");
+print("Database: " + db.getName());
+print("Collection: tasks");
+print("Total documents: " + db.tasks.count());
 
-print("\n=== Tasks with 'mongodb' in title ===");
-db.tasks.find({
-  title: { $regex: "mongodb", $options: "i" }
-}).forEach(printjson);
+print("\n========== END ==========\n");
