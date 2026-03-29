@@ -2,25 +2,26 @@ const express = require("express");
 const router = express.Router();
 const Task = require("../models/Task");
 
-// GET all tasks (newest first)
+// GET all tasks
 router.get("/tasks", async (req, res) => {
   try {
     const tasks = await Task.find().sort({ createdAt: -1 });
     res.json(tasks);
   } catch (err) {
-    console.log(err);
     res.status(500).json({ error: "Error fetching tasks" });
   }
 });
 
-// ADD task
+// ADD task with priority
 router.post("/add", async (req, res) => {
   try {
-    const newTask = new Task({ title: req.body.title });
+    const newTask = new Task({ 
+      title: req.body.title,
+      priority: req.body.priority || 'medium'
+    });
     await newTask.save();
     res.json({ success: true, task: newTask });
   } catch (err) {
-    console.log(err);
     res.status(500).json({ error: "Error adding task" });
   }
 });
@@ -31,7 +32,6 @@ router.delete("/delete/:id", async (req, res) => {
     await Task.findByIdAndDelete(req.params.id);
     res.json({ success: true });
   } catch (err) {
-    console.log(err);
     res.status(500).json({ error: "Error deleting task" });
   }
 });
@@ -43,15 +43,15 @@ router.put("/toggle/:id", async (req, res) => {
     if (!task) return res.status(404).json({ error: "Task not found" });
     
     task.completed = !task.completed;
+    task.completedAt = task.completed ? new Date() : null;
     await task.save();
-    res.json({ success: true, completed: task.completed });
+    res.json({ success: true });
   } catch (err) {
-    console.log(err);
     res.status(500).json({ error: "Error toggling task" });
   }
 });
 
-// EDIT task (bonus feature)
+// EDIT task
 router.put("/edit/:id", async (req, res) => {
   try {
     const task = await Task.findByIdAndUpdate(
@@ -59,11 +59,31 @@ router.put("/edit/:id", async (req, res) => {
       { title: req.body.title },
       { new: true }
     );
-    if (!task) return res.status(404).json({ error: "Task not found" });
     res.json({ success: true, task });
   } catch (err) {
-    console.log(err);
     res.status(500).json({ error: "Error editing task" });
+  }
+});
+
+// DASHBOARD STATISTICS
+router.get("/dashboard/stats", async (req, res) => {
+  try {
+    const totalTasks = await Task.countDocuments();
+    const completedTasks = await Task.countDocuments({ completed: true });
+    
+    const priorityStats = await Task.aggregate([
+      { $group: { _id: "$priority", count: { $sum: 1 } } }
+    ]);
+    
+    res.json({
+      totalTasks,
+      completedTasks,
+      pendingTasks: totalTasks - completedTasks,
+      completionRate: totalTasks > 0 ? (completedTasks / totalTasks * 100).toFixed(1) : 0,
+      priorityStats
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Error fetching stats" });
   }
 });
 
