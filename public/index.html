@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Complete Todo App - All Features</title>
+  <title>Todo App - Complete (with Categories & Dark Mode)</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -38,7 +38,24 @@
       z-index: 1000;
     }
     
-    /* Dashboard Stats */
+    /* Action Buttons */
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      justify-content: flex-end;
+    }
+    .action-btn {
+      background: #48bb78;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .action-btn.import { background: #4299e1; }
+    
+    /* Dashboard */
     .dashboard {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -75,7 +92,16 @@
       overflow: hidden;
       margin: 0 10px;
     }
-    .bar { height: 25px; transition: width 0.3s; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; color: white; font-size: 11px; }
+    .bar {
+      height: 25px;
+      transition: width 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 8px;
+      color: white;
+      font-size: 11px;
+    }
     
     /* Alert Banner */
     .alert-banner {
@@ -123,10 +149,10 @@
     }
     button:hover { background: #5a67d8; }
     
-    /* Filter Buttons */
+    /* Filter Sections */
     .filters-section {
       display: flex;
-      gap: 10px;
+      gap: 20px;
       margin-bottom: 20px;
       flex-wrap: wrap;
       justify-content: space-between;
@@ -136,7 +162,7 @@
       gap: 8px;
       flex-wrap: wrap;
     }
-    .filter-btn, .cat-btn, .quick-btn {
+    .filter-btn, .cat-btn {
       background: #e0e0e0;
       color: #333;
       padding: 6px 12px;
@@ -145,24 +171,36 @@
       cursor: pointer;
       font-size: 12px;
     }
-    .filter-btn.active, .cat-btn.active, .quick-btn.active {
+    .filter-btn.active, .cat-btn.active {
       background: #667eea;
       color: white;
     }
     
-    /* Action Buttons */
-    .action-buttons {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      justify-content: flex-end;
+    /* Category Badges */
+    .category-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      margin-left: 10px;
+      color: white;
     }
-    .action-btn {
-      background: #48bb78;
-      padding: 6px 12px;
-      font-size: 12px;
+    .category-work { background: #4299e1; }
+    .category-personal { background: #48bb78; }
+    .category-shopping { background: #ed8936; }
+    .category-study { background: #9f7aea; }
+    .category-health { background: #f56565; }
+    .category-other { background: #a0aec0; }
+    
+    /* Tags */
+    .tags { font-size: 11px; margin-top: 3px; }
+    .tag {
+      display: inline-block;
+      background: #e2e8f0;
+      padding: 2px 6px;
+      border-radius: 10px;
+      margin-right: 5px;
     }
-    .action-btn.import { background: #4299e1; }
     
     .stats {
       text-align: center;
@@ -191,7 +229,7 @@
     .task-content { flex: 1; }
     .task-title { font-size: 15px; margin-bottom: 5px; }
     .task-title.completed { text-decoration: line-through; color: #888; }
-    .priority-badge, .category-badge, .due-badge {
+    .priority-badge, .due-badge {
       display: inline-block;
       padding: 2px 6px;
       border-radius: 10px;
@@ -203,16 +241,8 @@
     .priority-high { background: #ed8936; }
     .priority-medium { background: #ecc94b; color: #333; }
     .priority-low { background: #48bb78; }
-    .category-work { background: #4299e1; }
-    .category-personal { background: #48bb78; }
-    .category-shopping { background: #ed8936; }
-    .category-study { background: #9f7aea; }
-    .category-health { background: #f56565; }
-    .category-other { background: #a0aec0; }
     .overdue-badge { background: #f56565; }
     .today-badge { background: #f39c12; }
-    .tags { font-size: 10px; margin-top: 3px; }
-    .tag { display: inline-block; background: #e2e8f0; padding: 2px 5px; border-radius: 8px; margin-right: 4px; }
     .task-date { font-size: 10px; color: #999; margin-top: 3px; }
     .task-actions { display: flex; gap: 5px; }
     .task-actions button { padding: 4px 8px; font-size: 11px; }
@@ -233,20 +263,27 @@
     body.dark-mode .task-title { color: #fff; }
     body.dark-mode .task-date { color: #aaa; }
     body.dark-mode .tag { background: #4d4d4d; color: #fff; }
-    body.dark-mode .filter-btn, body.dark-mode .cat-btn, body.dark-mode .quick-btn {
+    body.dark-mode .filter-btn, body.dark-mode .cat-btn {
       background: #4d4d4d; color: #fff;
     }
-    body.dark-mode .filter-btn.active, body.dark-mode .cat-btn.active, body.dark-mode .quick-btn.active {
+    body.dark-mode .filter-btn.active, body.dark-mode .cat-btn.active {
       background: #667eea;
     }
   </style>
 </head>
 <body>
 <button class="theme-toggle" onclick="toggleDarkMode()">🌙</button>
+
 <div class="container">
-  <h1>📊 Complete Todo App (Priority + Due Dates + Categories)</h1>
+  <h1>📊 Complete Todo App</h1>
   
-  <!-- Dashboard (Contributor 1) -->
+  <!-- Export/Import Buttons -->
+  <div class="action-buttons">
+    <button class="action-btn" onclick="exportTasks()">📤 Export Tasks</button>
+    <button class="action-btn import" onclick="importTasks()">📥 Import Tasks</button>
+  </div>
+  
+  <!-- Dashboard -->
   <div class="dashboard">
     <div class="stat-card"><div class="number" id="totalTasks">0</div><div class="label">Total Tasks</div></div>
     <div class="stat-card"><div class="number" id="completedTasks">0</div><div class="label">Completed</div></div>
@@ -254,13 +291,13 @@
     <div class="stat-card"><div class="number" id="completionRate">0%</div><div class="label">Completion Rate</div></div>
   </div>
   
-  <!-- Priority Chart (Contributor 1) -->
+  <!-- Priority Chart -->
   <div class="priority-chart"><h3>Priority Distribution</h3><div id="priorityBars"></div></div>
   
-  <!-- Alert Banner (Contributor 2) -->
+  <!-- Alert Banner -->
   <div class="alert-banner" id="alertBanner"></div>
   
-  <!-- Search Section (Contributor 2) -->
+  <!-- Search Section -->
   <div class="search-section">
     <div class="search-box">
       <input type="text" id="searchInput" placeholder="Search tasks..." onkeyup="searchTasks()">
@@ -276,7 +313,7 @@
     </div>
   </div>
   
-  <!-- Add Task Form (ALL contributors) -->
+  <!-- Add Task Form -->
   <div class="input-section">
     <input id="taskInput" placeholder="Enter a task..." onkeypress="handleKeyPress(event)">
     <select id="prioritySelect">
@@ -293,7 +330,7 @@
     <button onclick="addTask()">Add Task</button>
   </div>
   
-  <!-- Filter Buttons (Contributor 1 & 3) -->
+  <!-- Filter Buttons -->
   <div class="filters-section">
     <div class="priority-filters">
       <button class="filter-btn active" onclick="filterByPriority('all', this)">All</button>
@@ -305,20 +342,14 @@
       <button class="filter-btn" onclick="filterByPriority('pending', this)">Pending</button>
     </div>
     <div class="category-filters">
-      <button class="cat-btn" onclick="filterByCategory('all', this)">All Cats</button>
-      <button class="cat-btn" onclick="filterByCategory('work', this)">Work</button>
-      <button class="cat-btn" onclick="filterByCategory('personal', this)">Personal</button>
-      <button class="cat-btn" onclick="filterByCategory('shopping', this)">Shopping</button>
-      <button class="cat-btn" onclick="filterByCategory('study', this)">Study</button>
-      <button class="cat-btn" onclick="filterByCategory('health', this)">Health</button>
-      <button class="cat-btn" onclick="filterByCategory('other', this)">Other</button>
+      <button class="cat-btn active" onclick="filterByCategory('all', this)">📋 All</button>
+      <button class="cat-btn" onclick="filterByCategory('work', this)">💼 Work</button>
+      <button class="cat-btn" onclick="filterByCategory('personal', this)">👤 Personal</button>
+      <button class="cat-btn" onclick="filterByCategory('shopping', this)">🛒 Shopping</button>
+      <button class="cat-btn" onclick="filterByCategory('study', this)">📚 Study</button>
+      <button class="cat-btn" onclick="filterByCategory('health', this)">🏥 Health</button>
+      <button class="cat-btn" onclick="filterByCategory('other', this)">📝 Other</button>
     </div>
-  </div>
-  
-  <!-- Export/Import (Contributor 3) -->
-  <div class="action-buttons">
-    <button class="action-btn" onclick="exportTasks()">📤 Export</button>
-    <button class="action-btn import" onclick="importTasks()">📥 Import</button>
   </div>
   
   <div class="stats" id="stats"></div>
@@ -330,7 +361,7 @@ let allTasks = [];
 let currentPriorityFilter = 'all';
 let currentCategoryFilter = 'all';
 
-// ============ DARK MODE (Contributor 3) ============
+// ========== DARK MODE ==========
 function toggleDarkMode() {
   document.body.classList.toggle('dark-mode');
   const btn = document.querySelector('.theme-toggle');
@@ -342,6 +373,7 @@ function toggleDarkMode() {
     localStorage.setItem('darkMode', 'disabled');
   }
 }
+
 function checkDarkMode() {
   if (localStorage.getItem('darkMode') === 'enabled') {
     document.body.classList.add('dark-mode');
@@ -349,7 +381,37 @@ function checkDarkMode() {
   }
 }
 
-// ============ DASHBOARD (Contributor 1) ============
+// ========== EXPORT/IMPORT ==========
+async function exportTasks() {
+  const res = await fetch("/export");
+  const tasks = await res.json();
+  const link = document.createElement('a');
+  link.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(tasks, null, 2));
+  link.download = `todo_tasks_${new Date().toISOString().slice(0,19)}.json`;
+  link.click();
+  alert(`Exported ${tasks.length} tasks!`);
+}
+
+async function importTasks() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = async (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const tasks = JSON.parse(event.target.result);
+      await fetch("/import", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(tasks) });
+      alert(`Imported ${tasks.length} tasks!`);
+      loadTasks();
+      loadDashboard();
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+// ========== DASHBOARD ==========
 async function loadDashboard() {
   try {
     const res = await fetch("/dashboard/stats");
@@ -371,7 +433,7 @@ async function loadDashboard() {
   } catch (err) { console.error(err); }
 }
 
-// ============ OVERDUE ALERT (Contributor 2) ============
+// ========== OVERDUE ALERT ==========
 async function checkOverdueTasks() {
   try {
     const res = await fetch("/tasks/overdue");
@@ -385,7 +447,7 @@ async function checkOverdueTasks() {
   } catch (err) {}
 }
 
-// ============ ADD TASK (All contributors) ============
+// ========== ADD TASK ==========
 async function addTask() {
   const title = document.getElementById("taskInput").value;
   const priority = document.getElementById("prioritySelect").value;
@@ -409,7 +471,7 @@ async function addTask() {
   loadDashboard();
 }
 
-// ============ DELETE, TOGGLE, EDIT ============
+// ========== DELETE, TOGGLE, EDIT ==========
 async function deleteTask(id) {
   if (confirm("Delete?")) {
     await fetch(`/delete/${id}`, { method: "DELETE" });
@@ -450,7 +512,7 @@ async function editTask(id, title, priority, dueDate, category, tagsArr) {
 
 function handleKeyPress(e) { if (e.key === "Enter") addTask(); }
 
-// ============ SEARCH (Contributor 2) ============
+// ========== SEARCH ==========
 async function searchTasks() {
   const q = document.getElementById("searchInput").value;
   const status = document.getElementById("statusFilter").value;
@@ -460,7 +522,7 @@ async function searchTasks() {
   displayTasks(tasks);
 }
 
-// ============ FILTERS ============
+// ========== FILTERS ==========
 function filterByPriority(filter, btn) {
   currentPriorityFilter = filter;
   document.querySelectorAll('.priority-filters .filter-btn').forEach(b => b.classList.remove('active'));
@@ -478,14 +540,12 @@ function filterByCategory(filter, btn) {
 function applyFilters() {
   let filtered = [...allTasks];
   
-  // Apply priority filter
   if (currentPriorityFilter !== 'all') {
     if (currentPriorityFilter === 'completed') filtered = filtered.filter(t => t.completed === true);
     else if (currentPriorityFilter === 'pending') filtered = filtered.filter(t => t.completed === false);
     else filtered = filtered.filter(t => t.priority === currentPriorityFilter);
   }
   
-  // Apply category filter
   if (currentCategoryFilter !== 'all') {
     filtered = filtered.filter(t => t.category === currentCategoryFilter);
   }
@@ -493,37 +553,7 @@ function applyFilters() {
   displayTasks(filtered);
 }
 
-// ============ EXPORT/IMPORT (Contributor 3) ============
-async function exportTasks() {
-  const res = await fetch("/export");
-  const tasks = await res.json();
-  const link = document.createElement('a');
-  link.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(tasks, null, 2));
-  link.download = `todo_tasks_${new Date().toISOString().slice(0,19)}.json`;
-  link.click();
-  alert(`Exported ${tasks.length} tasks!`);
-}
-
-async function importTasks() {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = '.json';
-  input.onchange = async (e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      const tasks = JSON.parse(event.target.result);
-      await fetch("/import", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(tasks) });
-      alert(`Imported ${tasks.length} tasks!`);
-      loadTasks();
-      loadDashboard();
-    };
-    reader.readAsText(file);
-  };
-  input.click();
-}
-
-// ============ DISPLAY TASKS ============
+// ========== DISPLAY TASKS ==========
 function displayTasks(tasks) {
   const taskList = document.getElementById("taskList");
   const statsDiv = document.getElementById("stats");
@@ -580,7 +610,7 @@ function displayTasks(tasks) {
   statsDiv.innerHTML = `📊 ${completed}/${tasks.length} completed (${percent}%)`;
 }
 
-// ============ LOAD TASKS ============
+// ========== LOAD TASKS ==========
 async function loadTasks() {
   try {
     const res = await fetch("/tasks");
@@ -598,7 +628,7 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
-// ============ INITIALIZE ============
+// ========== INITIALIZE ==========
 checkDarkMode();
 loadTasks();
 loadDashboard();
