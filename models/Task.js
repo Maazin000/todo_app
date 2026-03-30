@@ -3,19 +3,19 @@ const mongoose = require("mongoose");
 const TaskSchema = new mongoose.Schema({
   title: { type: String, required: true },
   
-  // From Contributor 1
+  // Contributor 1: Priority
   priority: { 
     type: String, 
     enum: ['low', 'medium', 'high', 'urgent'],
     default: 'medium'
   },
   
-  // From Contributor 2
+  // Contributor 2: Due Dates
   dueDate: { type: Date, default: null },
   reminderDate: { type: Date, default: null },
   reminderSent: { type: Boolean, default: false },
   
-  // From Contributor 3
+  // Contributor 3: Categories & Tags
   category: {
     type: String,
     enum: ['work', 'personal', 'shopping', 'study', 'health', 'other'],
