@@ -13,7 +13,7 @@ router.get("/tasks", async (req, res) => {
   }
 });
 
-// ADD task with ALL fields
+// ADD task (with all fields)
 router.post("/add", async (req, res) => {
   try {
     const newTask = new Task({ 
@@ -77,7 +77,7 @@ router.put("/edit/:id", async (req, res) => {
   }
 });
 
-// Contributor 1 routes
+// Dashboard Stats (Contributor 1)
 router.get("/dashboard/stats", async (req, res) => {
   try {
     const totalTasks = await Task.countDocuments();
@@ -97,7 +97,7 @@ router.get("/dashboard/stats", async (req, res) => {
   }
 });
 
-// Contributor 2 routes
+// Search Tasks (Contributor 2)
 router.get("/tasks/search", async (req, res) => {
   try {
     const { q, status, due } = req.query;
@@ -122,6 +122,7 @@ router.get("/tasks/search", async (req, res) => {
   }
 });
 
+// Overdue Tasks (Contributor 2)
 router.get("/tasks/overdue", async (req, res) => {
   try {
     const today = new Date(); today.setHours(0,0,0,0);
@@ -132,7 +133,9 @@ router.get("/tasks/overdue", async (req, res) => {
   }
 });
 
-// Contributor 3 routes
+// ========== CONTRIBUTOR 3 ADDITIONS ==========
+
+// Category Statistics
 router.get("/categories/stats", async (req, res) => {
   try {
     const stats = await Task.aggregate([
@@ -144,6 +147,7 @@ router.get("/categories/stats", async (req, res) => {
   }
 });
 
+// Export Tasks
 router.get("/export", async (req, res) => {
   try {
     const tasks = await Task.find();
@@ -153,6 +157,7 @@ router.get("/export", async (req, res) => {
   }
 });
 
+// Import Tasks
 router.post("/import", async (req, res) => {
   try {
     const tasks = req.body;
