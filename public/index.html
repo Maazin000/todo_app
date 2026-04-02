@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Todo App - Complete (with Categories & Dark Mode)</title>
+  <title>Todo App - MongoDB Project</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -20,9 +20,9 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.1);
       transition: all 0.3s ease;
     }
-    h1 { text-align: center; margin-bottom: 20px; }
+    h1 { text-align: center; margin-bottom: 10px; color: #333; }
+    .subtitle { text-align: center; color: #666; margin-bottom: 30px; font-size: 14px; }
     
-    /* Dark Mode Toggle */
     .theme-toggle {
       position: fixed;
       top: 20px;
@@ -38,24 +38,6 @@
       z-index: 1000;
     }
     
-    /* Action Buttons */
-    .action-buttons {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      justify-content: flex-end;
-    }
-    .action-btn {
-      background: #48bb78;
-      color: white;
-      padding: 8px 16px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    .action-btn.import { background: #4299e1; }
-    
-    /* Dashboard */
     .dashboard {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -72,19 +54,19 @@
     .stat-card .number { font-size: 28px; font-weight: bold; }
     .stat-card .label { font-size: 12px; opacity: 0.9; }
     
-    /* Priority Chart */
     .priority-chart {
       background: #f7f7f7;
       padding: 15px;
       border-radius: 10px;
       margin-bottom: 20px;
     }
+    .priority-chart h3 { color: #333; margin-bottom: 10px; }
     .priority-bar {
       margin: 8px 0;
       display: flex;
       align-items: center;
     }
-    .priority-label { width: 70px; font-weight: bold; }
+    .priority-label { width: 70px; font-weight: bold; color: #333; }
     .bar-container {
       flex: 1;
       background: #e0e0e0;
@@ -101,9 +83,9 @@
       padding-right: 8px;
       color: white;
       font-size: 11px;
+      font-weight: bold;
     }
     
-    /* Alert Banner */
     .alert-banner {
       background: #fef5e7;
       border-left: 4px solid #f39c12;
@@ -111,10 +93,11 @@
       margin-bottom: 20px;
       border-radius: 5px;
       display: none;
+      color: #333;
+      font-weight: bold;
     }
     .alert-banner.show { display: block; }
     
-    /* Search Section */
     .search-section {
       background: #f7f7f7;
       padding: 15px;
@@ -126,7 +109,6 @@
     .filter-group { display: flex; gap: 10px; flex-wrap: wrap; }
     .filter-group select { padding: 8px; border: 1px solid #ddd; border-radius: 5px; }
     
-    /* Input Section */
     .input-section {
       display: flex;
       gap: 10px;
@@ -139,17 +121,17 @@
       border-radius: 8px;
       font-size: 14px;
     }
-    input { flex: 2; min-width: 150px; }
-    select { flex: 1; min-width: 100px; }
+    input { flex: 2; min-width: 150px; background: white; color: #333; }
+    select { flex: 1; min-width: 100px; background: white; color: #333; }
     button {
       background: #667eea;
       color: white;
       border: none;
       cursor: pointer;
+      font-weight: bold;
     }
     button:hover { background: #5a67d8; }
     
-    /* Filter Sections */
     .filters-section {
       display: flex;
       gap: 20px;
@@ -170,20 +152,21 @@
       border-radius: 20px;
       cursor: pointer;
       font-size: 12px;
+      font-weight: bold;
     }
     .filter-btn.active, .cat-btn.active {
       background: #667eea;
       color: white;
     }
     
-    /* Category Badges */
     .category-badge {
       display: inline-block;
       padding: 2px 8px;
       border-radius: 12px;
       font-size: 11px;
       margin-left: 10px;
-      color: white;
+      color: white !important;
+      font-weight: bold;
     }
     .category-work { background: #4299e1; }
     .category-personal { background: #48bb78; }
@@ -192,14 +175,15 @@
     .category-health { background: #f56565; }
     .category-other { background: #a0aec0; }
     
-    /* Tags */
-    .tags { font-size: 11px; margin-top: 3px; }
+    .tags { font-size: 11px; margin-top: 3px; color: #666; }
     .tag {
       display: inline-block;
       background: #e2e8f0;
       padding: 2px 6px;
       border-radius: 10px;
       margin-right: 5px;
+      color: #333;
+      font-weight: 500;
     }
     
     .stats {
@@ -209,6 +193,7 @@
       border-radius: 8px;
       margin-bottom: 20px;
       font-weight: bold;
+      color: #667eea;
     }
     .task-list { list-style: none; }
     .task-item {
@@ -227,7 +212,7 @@
     .task-item.overdue { background: #fff5f5; }
     .task-item.due-today { background: #fffaf0; }
     .task-content { flex: 1; }
-    .task-title { font-size: 15px; margin-bottom: 5px; }
+    .task-title { font-size: 15px; margin-bottom: 5px; color: #333; font-weight: 500; }
     .task-title.completed { text-decoration: line-through; color: #888; }
     .priority-badge, .due-badge {
       display: inline-block;
@@ -235,17 +220,26 @@
       border-radius: 10px;
       font-size: 10px;
       margin-left: 8px;
-      color: white;
+      color: white !important;
+      font-weight: bold;
     }
     .priority-urgent { background: #f56565; }
     .priority-high { background: #ed8936; }
-    .priority-medium { background: #ecc94b; color: #333; }
+    .priority-medium { background: #ecc94b; color: #333 !important; }
     .priority-low { background: #48bb78; }
     .overdue-badge { background: #f56565; }
     .today-badge { background: #f39c12; }
-    .task-date { font-size: 10px; color: #999; margin-top: 3px; }
+    .task-date { font-size: 10px; color: #666 !important; margin-top: 3px; }
     .task-actions { display: flex; gap: 5px; }
-    .task-actions button { padding: 4px 8px; font-size: 11px; }
+    .task-actions button {
+      padding: 4px 8px;
+      font-size: 11px;
+      color: white !important;
+      font-weight: bold !important;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
     .edit-btn { background: #48bb78; }
     .toggle-btn { background: #4299e1; }
     .delete-btn { background: #f56565; }
@@ -254,36 +248,39 @@
     body.dark-mode { background: #1a1a1a; }
     body.dark-mode .container { background: #2d2d2d; }
     body.dark-mode h1 { color: #fff; }
-    body.dark-mode .input-section input, body.dark-mode .input-section select,
+    body.dark-mode .subtitle { color: #aaa; }
+    body.dark-mode .input-section input, body.dark-mode .input-section select {
+      background: #3d3d3d; color: #fff; border-color: #4d4d4d;
+    }
     body.dark-mode .search-section input, body.dark-mode .search-section select {
       background: #3d3d3d; color: #fff; border-color: #4d4d4d;
     }
-    body.dark-mode .stats, body.dark-mode .priority-chart { background: #3d3d3d; color: #fff; }
+    body.dark-mode .stats { background: #3d3d3d; color: #667eea; }
+    body.dark-mode .priority-chart { background: #3d3d3d; }
+    body.dark-mode .priority-chart h3 { color: #fff; }
+    body.dark-mode .priority-label { color: #fff; }
     body.dark-mode .task-item { background: #3d3d3d; }
     body.dark-mode .task-title { color: #fff; }
-    body.dark-mode .task-date { color: #aaa; }
-    body.dark-mode .tag { background: #4d4d4d; color: #fff; }
+    body.dark-mode .task-date { color: #aaa !important; }
+    body.dark-mode .tags { color: #aaa; }
+    body.dark-mode .tag { background: #555; color: #fff; }
     body.dark-mode .filter-btn, body.dark-mode .cat-btn {
       background: #4d4d4d; color: #fff;
     }
     body.dark-mode .filter-btn.active, body.dark-mode .cat-btn.active {
       background: #667eea;
     }
+    body.dark-mode .priority-medium { color: #fff !important; background: #ecc94b; }
+    body.dark-mode .alert-banner { background: #2d2d2d; color: #f39c12; border-left-color: #f39c12; }
   </style>
 </head>
 <body>
 <button class="theme-toggle" onclick="toggleDarkMode()">🌙</button>
 
 <div class="container">
-  <h1>📊 Complete Todo App</h1>
+  <h1>📊 MongoDB Todo App</h1>
+  <div class="subtitle">Powered by MongoDB Database</div>
   
-  <!-- Export/Import Buttons -->
-  <div class="action-buttons">
-    <button class="action-btn" onclick="exportTasks()">📤 Export Tasks</button>
-    <button class="action-btn import" onclick="importTasks()">📥 Import Tasks</button>
-  </div>
-  
-  <!-- Dashboard -->
   <div class="dashboard">
     <div class="stat-card"><div class="number" id="totalTasks">0</div><div class="label">Total Tasks</div></div>
     <div class="stat-card"><div class="number" id="completedTasks">0</div><div class="label">Completed</div></div>
@@ -291,13 +288,10 @@
     <div class="stat-card"><div class="number" id="completionRate">0%</div><div class="label">Completion Rate</div></div>
   </div>
   
-  <!-- Priority Chart -->
   <div class="priority-chart"><h3>Priority Distribution</h3><div id="priorityBars"></div></div>
   
-  <!-- Alert Banner -->
   <div class="alert-banner" id="alertBanner"></div>
   
-  <!-- Search Section -->
   <div class="search-section">
     <div class="search-box">
       <input type="text" id="searchInput" placeholder="Search tasks..." onkeyup="searchTasks()">
@@ -313,7 +307,6 @@
     </div>
   </div>
   
-  <!-- Add Task Form -->
   <div class="input-section">
     <input id="taskInput" placeholder="Enter a task..." onkeypress="handleKeyPress(event)">
     <select id="prioritySelect">
@@ -330,7 +323,6 @@
     <button onclick="addTask()">Add Task</button>
   </div>
   
-  <!-- Filter Buttons -->
   <div class="filters-section">
     <div class="priority-filters">
       <button class="filter-btn active" onclick="filterByPriority('all', this)">All</button>
@@ -361,7 +353,6 @@ let allTasks = [];
 let currentPriorityFilter = 'all';
 let currentCategoryFilter = 'all';
 
-// ========== DARK MODE ==========
 function toggleDarkMode() {
   document.body.classList.toggle('dark-mode');
   const btn = document.querySelector('.theme-toggle');
@@ -381,37 +372,6 @@ function checkDarkMode() {
   }
 }
 
-// ========== EXPORT/IMPORT ==========
-async function exportTasks() {
-  const res = await fetch("/export");
-  const tasks = await res.json();
-  const link = document.createElement('a');
-  link.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(tasks, null, 2));
-  link.download = `todo_tasks_${new Date().toISOString().slice(0,19)}.json`;
-  link.click();
-  alert(`Exported ${tasks.length} tasks!`);
-}
-
-async function importTasks() {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = '.json';
-  input.onchange = async (e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      const tasks = JSON.parse(event.target.result);
-      await fetch("/import", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(tasks) });
-      alert(`Imported ${tasks.length} tasks!`);
-      loadTasks();
-      loadDashboard();
-    };
-    reader.readAsText(file);
-  };
-  input.click();
-}
-
-// ========== DASHBOARD ==========
 async function loadDashboard() {
   try {
     const res = await fetch("/dashboard/stats");
@@ -433,7 +393,6 @@ async function loadDashboard() {
   } catch (err) { console.error(err); }
 }
 
-// ========== OVERDUE ALERT ==========
 async function checkOverdueTasks() {
   try {
     const res = await fetch("/tasks/overdue");
@@ -447,7 +406,6 @@ async function checkOverdueTasks() {
   } catch (err) {}
 }
 
-// ========== ADD TASK ==========
 async function addTask() {
   const title = document.getElementById("taskInput").value;
   const priority = document.getElementById("prioritySelect").value;
@@ -471,7 +429,6 @@ async function addTask() {
   loadDashboard();
 }
 
-// ========== DELETE, TOGGLE, EDIT ==========
 async function deleteTask(id) {
   if (confirm("Delete?")) {
     await fetch(`/delete/${id}`, { method: "DELETE" });
@@ -512,7 +469,6 @@ async function editTask(id, title, priority, dueDate, category, tagsArr) {
 
 function handleKeyPress(e) { if (e.key === "Enter") addTask(); }
 
-// ========== SEARCH ==========
 async function searchTasks() {
   const q = document.getElementById("searchInput").value;
   const status = document.getElementById("statusFilter").value;
@@ -522,7 +478,6 @@ async function searchTasks() {
   displayTasks(tasks);
 }
 
-// ========== FILTERS ==========
 function filterByPriority(filter, btn) {
   currentPriorityFilter = filter;
   document.querySelectorAll('.priority-filters .filter-btn').forEach(b => b.classList.remove('active'));
@@ -553,7 +508,6 @@ function applyFilters() {
   displayTasks(filtered);
 }
 
-// ========== DISPLAY TASKS ==========
 function displayTasks(tasks) {
   const taskList = document.getElementById("taskList");
   const statsDiv = document.getElementById("stats");
@@ -610,7 +564,6 @@ function displayTasks(tasks) {
   statsDiv.innerHTML = `📊 ${completed}/${tasks.length} completed (${percent}%)`;
 }
 
-// ========== LOAD TASKS ==========
 async function loadTasks() {
   try {
     const res = await fetch("/tasks");
@@ -628,7 +581,6 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
-// ========== INITIALIZE ==========
 checkDarkMode();
 loadTasks();
 loadDashboard();

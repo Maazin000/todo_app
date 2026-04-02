@@ -1,45 +1,30 @@
-// queries.js - Updated with Priority
+// queries.js - Run with: mongosh < queries.js
 db = db.getSiblingDB('todoApp');
 
-print("\n========== TODO APP - MONGODB DATABASE ==========\n");
+print("\n========== MONGODB TODO APP DATABASE ==========\n");
 
-print("=== All Tasks (with Priority) ===");
+print("📋 All tasks (db.tasks.find()):");
 db.tasks.find().forEach(printjson);
 
-print("\n=== Tasks Grouped by Priority ===");
-db.tasks.aggregate([
-  {
-    $group: {
-      _id: "$priority",
-      count: { $sum: 1 },
-      tasks: { $push: "$title" }
-    }
-  }
-]).forEach(printjson);
+print("\n📊 Total tasks count: " + db.tasks.count());
 
-print("\n=== Pending Tasks ===");
-db.tasks.find({ completed: false }).forEach(printjson);
-
-print("\n=== Completed Tasks ===");
+print("\n✅ Completed tasks:");
 db.tasks.find({ completed: true }).forEach(printjson);
 
-print("\n=== Task Count ===");
-print("Total tasks: " + db.tasks.count());
-print("Completed: " + db.tasks.count({ completed: true }));
-print("Pending: " + db.tasks.count({ completed: false }));
+print("\n⏰ Pending tasks:");
+db.tasks.find({ completed: false }).forEach(printjson);
 
-print("\n=== Priority Distribution ===");
-print("Urgent: " + db.tasks.count({ priority: "urgent" }));
-print("High: " + db.tasks.count({ priority: "high" }));
-print("Medium: " + db.tasks.count({ priority: "medium" }));
-print("Low: " + db.tasks.count({ priority: "low" }));
+print("\n🎯 Tasks by priority:");
+db.tasks.aggregate([
+  { $group: { _id: "$priority", count: { $sum: 1 } } }
+]).forEach(printjson);
 
-print("\n=== Latest 5 Tasks ===");
-db.tasks.find().sort({ createdAt: -1 }).limit(5).forEach(printjson);
+print("\n📂 Tasks by category:");
+db.tasks.aggregate([
+  { $group: { _id: "$category", count: { $sum: 1 } } }
+]).forEach(printjson);
 
-print("\n=== MongoDB Connection Info ===");
-print("Database: " + db.getName());
-print("Collection: tasks");
-print("Total documents: " + db.tasks.count());
+print("\n📅 Tasks with due dates:");
+db.tasks.find({ dueDate: { $ne: null } }).forEach(printjson);
 
 print("\n========== END ==========\n");

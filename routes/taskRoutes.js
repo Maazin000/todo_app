@@ -13,7 +13,7 @@ router.get("/tasks", async (req, res) => {
   }
 });
 
-// ADD task (with all fields)
+// ADD task
 router.post("/add", async (req, res) => {
   try {
     const newTask = new Task({ 
@@ -77,7 +77,7 @@ router.put("/edit/:id", async (req, res) => {
   }
 });
 
-// Dashboard Stats (Contributor 1)
+// Dashboard Statistics
 router.get("/dashboard/stats", async (req, res) => {
   try {
     const totalTasks = await Task.countDocuments();
@@ -97,7 +97,7 @@ router.get("/dashboard/stats", async (req, res) => {
   }
 });
 
-// Search Tasks (Contributor 2)
+// Search Tasks
 router.get("/tasks/search", async (req, res) => {
   try {
     const { q, status, due } = req.query;
@@ -122,7 +122,7 @@ router.get("/tasks/search", async (req, res) => {
   }
 });
 
-// Overdue Tasks (Contributor 2)
+// Overdue Tasks
 router.get("/tasks/overdue", async (req, res) => {
   try {
     const today = new Date(); today.setHours(0,0,0,0);
@@ -132,8 +132,6 @@ router.get("/tasks/overdue", async (req, res) => {
     res.status(500).json({ error: "Error fetching overdue tasks" });
   }
 });
-
-// ========== CONTRIBUTOR 3 ADDITIONS ==========
 
 // Category Statistics
 router.get("/categories/stats", async (req, res) => {
@@ -147,28 +145,7 @@ router.get("/categories/stats", async (req, res) => {
   }
 });
 
-// Export Tasks
-router.get("/export", async (req, res) => {
-  try {
-    const tasks = await Task.find();
-    res.json(tasks);
-  } catch (err) {
-    res.status(500).json({ error: "Error exporting tasks" });
-  }
-});
-
-// Import Tasks
-router.post("/import", async (req, res) => {
-  try {
-    const tasks = req.body;
-    await Task.insertMany(tasks);
-    res.json({ success: true, count: tasks.length });
-  } catch (err) {
-    res.status(500).json({ error: "Error importing tasks" });
-  }
-});
-
-// MongoDB Proof
+// MongoDB Proof - Direct Database Query
 router.get("/mongodb-proof", async (req, res) => {
   try {
     const db = mongoose.connection.db;
@@ -177,11 +154,12 @@ router.get("/mongodb-proof", async (req, res) => {
     const count = await collection.countDocuments();
     res.json({
       success: true,
-      message: "✅ MongoDB connected to todoApp database",
+      message: "✅ MongoDB is connected and working!",
       database: "todoApp",
       collection: "tasks",
       totalTasks: count,
-      tasks: allTasks
+      tasks: allTasks,
+      mongodbQueryUsed: "db.tasks.find()"
     });
   } catch (err) {
     res.json({ success: false, error: err.message });
